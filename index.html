@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edify Me - Christian Community</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Navigation Header -->
+    <header id="main-header" class="hidden">
+        <div class="nav-container">
+            <div class="logo">✝️ Edify Me</div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" onclick="switchTab('feeds-tab', event)">Feeds</a></li>
+                    <li><a href="#" class="nav-link" onclick="switchTab('programs-tab', event)">Programs</a></li>
+                    <li><a href="#" class="nav-link" onclick="switchTab('followers-tab', event)">Followers</a></li>
+                    <li><a href="#" class="nav-link" onclick="switchTab('profile-tab', event)">My Profile</a></li>
+                    <li><a href="#" class="nav-link" onclick="switchTab('settings-tab', event)">Settings</a></li>
+                    <li><a href="#" onclick="logout()" style="color: #e53e3e;">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- AUTH SECTION -->
+    <div id="auth-section">
+        <!-- Login Form -->
+        <div id="login-card" class="auth-container">
+            <h2>Login to Edify Me</h2>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Username or Email</label>
+                    <input type="text" id="login-id" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Login</button>
+            </form>
+            <div class="auth-switch">
+                <a href="#" onclick="toggleAuth('reset')">Forgot Password?</a><br><br>
+                Don't have an account? <a href="#" onclick="toggleAuth('signup')">Sign Up</a>
+            </div>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signup-card" class="auth-container hidden">
+            <h2>Create Account</h2>
+            <form id="signup-form" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" id="signup-fname" required>
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" id="signup-lname" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="signup-username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Register</button>
+            </form>
+            <div class="auth-switch">
+                Already have an account? <a href="#" onclick="toggleAuth('login')">Login</a>
+            </div>
+        </div>
+
+        <!-- Password Reset Form -->
+        <div id="reset-card" class="auth-container hidden">
+            <h2>Reset Password</h2>
+            <form id="reset-form" onsubmit="handleReset(event)">
+                <div class="form-group">
+                    <label>Enter your registered Email</label>
+                    <input type="email" id="reset-email" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Send Verification Link</button>
+            </form>
+            <div class="auth-switch">
+                Remembered password? <a href="#" onclick="toggleAuth('login')">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP SECTION -->
+    <div id="app-section" class="hidden">
+        <div class="main-container">
+            
+            <!-- Left Main Column -->
+            <div id="main-content">
+                
+                <!-- FEEDS TAB -->
+                <div id="feeds-tab" class="tab-content">
+                    <!-- Post Creation Widget -->
+                    <div class="card">
+                        <h3>Share an Edifying Post</h3>
+                        <br>
+                        <div class="editor-toolbar">
+                            <button type="button" onclick="formatDoc('formatBlock', 'h1')">H1</button>
+                            <button type="button" onclick="formatDoc('formatBlock', 'h2')">H2</button>
+                            <button type="button" onclick="formatDoc('formatBlock', 'p')">P</button>
+                            <button type="button" onclick="formatDoc('italic')"><i>I</i></button>
+                            <button type="button" onclick="toggleEditMode()" title="Toggle Edit Mode">✏️ Edit</button>
+                        </div>
+                        <div id="post-editor" class="editable-area" contenteditable="true" placeholder="Write something inspiring..."></div>
+                        
+                        <div class="file-inputs">
+                            <div>
+                                <label><strong>Attach Image:</strong></label>
+                                <input type="file" id="post-image-input" accept="image/*">
+                            </div>
+                            <div>
+                                <label><strong>Attach Audio/Music:</strong></label>
+                                <input type="file" id="post-audio-input" accept="audio/*">
+                            </div>
+                        </div>
+                        
+                        <button class="btn" onclick="createPost()">Post</button>
+                    </div>
+
+                    <!-- Feed Filtering -->
+                    <div class="feed-controls">
+                        <h2>Your Feed</h2>
+                        <select id="feed-filter" class="feed-sort-select" onchange="renderFeed()">
+                            <option value="smart">Smart Algorithm (Followed First)</option>
+                            <option value="recent">Recent Posts</option>
+                            <option value="following">Posts from Following</option>
+                            <option value="non-following">Posts from Non-Following</option>
+                            <option value="suggested">Posts You May Like</option>
+                        </select>
+                    </div>
+
+                    <!-- Posts Stream -->
+                    <div id="posts-stream"></div>
+                </div>
+
+                <!-- PROGRAMS TAB -->
+                <div id="programs-tab" class="tab-content hidden">
+                    <div class="card">
+                        <h3>Announce a Program / Church Event</h3>
+                        <br>
+                        <form onsubmit="handleProgramPost(event)">
+                            <div class="form-group">
+                                <label>Program Title</label>
+                                <input type="text" id="prog-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Date & Time</label>
+                                <input type="text" id="prog-date" placeholder="e.g. Next Sunday, 9:00 AM" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="prog-desc" class="editable-area" style="width:100%;" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Upload Flyer Image</label>
+                                <input type="file" id="prog-flyer" accept="image/*" required>
+                            </div>
+                            <button type="submit" class="btn">Publish Program</button>
+                        </form>
+                    </div>
+
+                    <h2>Upcoming Programs & Announcements</h2>
+                    <br>
+                    <div id="programs-stream"></div>
+                </div>
+
+                <!-- FOLLOWERS TAB -->
+                <div id="followers-tab" class="tab-content hidden">
+                    <div class="card">
+                        <h2>Your Network</h2>
+                        <br>
+                        <h3>Followers</h3>
+                        <div id="followers-list-container"></div>
+                        <br><hr><br>
+                        <h3>Following</h3>
+                        <div id="following-list-container"></div>
+                    </div>
+                </div>
+
+                <!-- PROFILE TAB -->
+                <div id="profile-tab" class="tab-content hidden">
+                    <div class="card">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div class="avatar" style="width: 80px; height: 80px; font-size: 2rem;" id="profile-avatar">U</div>
+                            <div>
+                                <h2 id="profile-name">User Name</h2>
+                                <p id="profile-username">@username</p>
+                                <p><strong id="profile-followers-count">0</strong> Followers | <strong id="profile-following-count">0</strong> Following</p>
+                            </div>
+                        </div>
+                    </div>
+                    <h3>My Posts</h3>
+                    <br>
+                    <div id="my-posts-stream"></div>
+                </div>
+
+                <!-- SETTINGS TAB -->
+                <div id="settings-tab" class="tab-content hidden">
+                    <div class="card">
+                        <h2>Account Settings</h2>
+                        <br>
+                        <form onsubmit="handleSettingsUpdate(event)">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" id="sett-fname">
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" id="sett-lname">
+                            </div>
+                            <button type="submit" class="btn">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Sidebar Column (Suggestions) -->
+            <div id="sidebar-content">
+                <div class="card">
+                    <div class="sidebar-title">People You May Like to Follow</div>
+                    <div id="suggested-users-list"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
